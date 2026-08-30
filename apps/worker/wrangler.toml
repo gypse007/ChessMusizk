@@ -1,0 +1,34 @@
+name = "chess2music-api"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+EXPORT_VIDEO = "false"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "chess2music"
+database_id = "PASTE_D1_DATABASE_ID"
+
+[[r2_buckets]]
+binding = "AUDIO"
+bucket_name = "chess2music-audio"
+
+[[queues.producers]]
+binding = "JOBS"
+queue = "chess2music-jobs"
+
+[[queues.consumers]]
+queue = "chess2music-jobs"
+max_batch_size = 10
+max_batch_timeout = 5
+max_retries = 3
+
+[[kv_namespaces]]
+binding = "CONFIG"
+id = "PASTE_KV_NAMESPACE_ID"
+
+# Secrets (set via `wrangler secret put`, NOT stored here):
+#   TURNSTILE_SECRET
+#   WORKER_SHARED_TOKEN

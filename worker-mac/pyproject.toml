@@ -1,0 +1,17 @@
+[project]
+name = "chess-to-music-mac"
+version = "0.1.0"
+description = "Mac worker for Chess → Music (ACE-Step + mastering + analysis)"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.27",
+    "boto3>=1.34",
+    "python-dotenv>=1.0",
+    "librosa>=0.10",
+    "soundfile>=0.12",
+    "numpy>=1.24",
+    "ffmpeg-python>=0.2",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23"]
