@@ -7,7 +7,7 @@ from pathlib import Path
 
 import httpx
 
-from worker_mac.generate import submit, poll, GenResult
+from worker_mac.generate import submit_with_retry, wait_for_server_ready, poll_with_branches, GenResult
 from worker_mac.grammar import event_graph_to_spec
 from worker_mac.master import master_take, package_take
 from worker_mac.watermark import mix_watermark
@@ -85,8 +85,10 @@ async def process_job(client: httpx.AsyncClient, job: dict) -> None:
     spec = event_graph_to_spec(graph)
 
     await post_status(client, job_id, JobStatus.composing)
-    handle = await submit(spec.__dict__)
-    result = await poll(handle)
+
+    await wait_for_server_ready(client)
+    handle = await submit_with_retry(spec.__dict__, client)
+    result = await poll_with_branches(client, handle, spec.__dict__, job_id)
     if not result:
         await post_status(client, job_id, JobStatus.failed)
         return
