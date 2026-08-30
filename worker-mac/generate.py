@@ -80,6 +80,8 @@ async def submit_with_retry(spec: dict, client: httpx.AsyncClient, max_retries: 
 
 async def wait_for_server_ready(client: httpx.AsyncClient, timeout: float = 300.0) -> None:
     deadline = time.monotonic() + timeout
+    stable_ok_count = 0
+    required_stable = 2
     while time.monotonic() < deadline:
         try:
             resp = await client.get(f"{ACE_STEP_URL}/health")
@@ -88,8 +90,14 @@ async def wait_for_server_ready(client: httpx.AsyncClient, timeout: float = 300.
                 data = body.get("data") or {}
                 if data.get("models_initialized"):
                     return
+                if data.get("status") == "ok":
+                    stable_ok_count += 1
+                    if stable_ok_count >= required_stable:
+                        return
+                    continue
         except Exception:
             pass
+        stable_ok_count = 0
         await asyncio.sleep(5)
     raise TaskLostError("server did not become ready within timeout")
 
