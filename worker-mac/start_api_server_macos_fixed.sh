@@ -12,11 +12,9 @@ export ACESTEP_INIT_LLM=false
 export ACESTEP_NO_INIT=false
 export PYTHONFAULTHANDLER=1
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Server only needs ACE-Step on its path. sitecustomize.py, if present in ACE-Step-1.5,
+# provides the MLX-VAE safety net for MPS; env vars are the primary CPU fix.
+export PYTHONPATH="${HOME}/dev/ACE-Step-1.5"
 
-# sitecustomize.py monkey-patches MLX-VAE before ACE-Step starts.
-# Loaded explicitly via PYTHONPATH so the path is owned and auditable.
-export PYTHONPATH="${SCRIPT_DIR}:${HOME}/dev/ACE-Step-1.5"
-
-cd "$SCRIPT_DIR"
+cd "$HOME/dev/ACE-Step-1.5"
 exec ./start_api_server_macos.sh "$@"
