@@ -35,6 +35,9 @@ class EventGraph:
     anchors: List[Anchor]
     totalPlies: int
     targetDurationSec: int
+    timeControl: Optional[str] = None
+    timeCategory: Optional[str] = None
+    musicStylePreview: Optional[str] = None
 
 
 @dataclass

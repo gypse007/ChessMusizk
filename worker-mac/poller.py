@@ -7,12 +7,20 @@ from pathlib import Path
 
 import httpx
 
-from worker_mac.generate import submit_with_retry, wait_for_server_ready, poll_with_branches, GenResult
-from worker_mac.grammar import event_graph_to_spec
-from worker_mac.master import master_take, package_take
-from worker_mac.watermark import mix_watermark
-from worker_mac.r2 import upload_audio, upload_json
-from worker_mac.c2m_types import JobStatus
+try:
+    from worker_mac.generate import submit_with_retry, wait_for_server_ready, poll_with_branches, GenResult
+    from worker_mac.grammar import event_graph_to_spec
+    from worker_mac.master import master_take, package_take
+    from worker_mac.watermark import mix_watermark
+    from worker_mac.r2 import upload_audio, upload_json
+    from worker_mac.c2m_types import JobStatus
+except ModuleNotFoundError:
+    from generate import submit_with_retry, wait_for_server_ready, poll_with_branches, GenResult
+    from grammar import event_graph_to_spec
+    from master import master_take, package_take
+    from watermark import mix_watermark
+    from r2 import upload_audio, upload_json
+    from c2m_types import JobStatus
 
 
 WORKER_BASE_URL = os.environ["WORKER_BASE_URL"]
@@ -57,7 +65,10 @@ async def process_job(client: httpx.AsyncClient, job: dict) -> None:
         await post_status(client, job_id, JobStatus.failed)
         return
 
-    from worker_mac.c2m_types import EventGraph, Anchor, MoveNode
+    try:
+        from worker_mac.c2m_types import EventGraph, Anchor, MoveNode
+    except ModuleNotFoundError:
+        from c2m_types import EventGraph, Anchor, MoveNode
 
     moves = [
         MoveNode(
@@ -79,6 +90,9 @@ async def process_job(client: httpx.AsyncClient, job: dict) -> None:
         anchors=anchors,
         totalPlies=event_graph.get("totalPlies", len(moves)),
         targetDurationSec=target_sec,
+        timeControl=event_graph.get("timeControl"),
+        timeCategory=event_graph.get("timeCategory"),
+        musicStylePreview=event_graph.get("musicStylePreview"),
     )
 
     await post_status(client, job_id, JobStatus.arc)

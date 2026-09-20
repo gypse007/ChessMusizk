@@ -1,4 +1,41 @@
-import type { MoveNode, Anchor, EventGraph, MoveClass } from '@chess-to-music/shared';
+import type { MoveNode, Anchor, EventGraph, MoveClass, TimeControlCategory } from '@chess-to-music/shared';
+
+export function parseTimeControlCategory(timeControl?: string): TimeControlCategory {
+  if (!timeControl) return 'blitz';
+  try {
+    const tc = timeControl.trim();
+    if (tc === '30' || tc.startsWith('30+') || tc.startsWith('20+1')) return 'ultrabullet';
+    const basePart = tc.split('+')[0].split('/')[0].trim();
+    const seconds = parseInt(basePart, 10);
+    if (isNaN(seconds)) return 'blitz';
+    if (seconds <= 30) return 'ultrabullet';
+    if (seconds < 180) return 'bullet';
+    if (seconds < 600) return 'blitz';
+    if (seconds <= 3600) return 'rapid';
+    return 'classical';
+  } catch {
+    return 'blitz';
+  }
+}
+
+export function getMusicStylePreview(category: TimeControlCategory): string {
+  switch (category) {
+    case 'ultrabullet':
+      return 'Hyperdrive Glitch & Sub-Bass Sprint';
+    case 'bullet':
+      return 'Live Festival EDM Anthem (David Guetta Main Stage Style)';
+    case 'blitz':
+      return 'Driving Hybrid Electronic-Orchestral';
+    case 'rapid':
+      return 'Atmospheric Cinematic Orchestral';
+    case 'classical':
+      return 'Deep Classical Orchestral Arc';
+    case 'daily':
+      return 'Ambient Cinematic Acoustic';
+    default:
+      return 'Neutral Cinematic Hybrid';
+  }
+}
 
 export function buildEventGraph(
   moves: Array<{
@@ -11,7 +48,10 @@ export function buildEventGraph(
   }>,
   totalPlies: number,
   targetDurationSec: 60 | 75 = 60,
+  timeControl?: string,
 ): EventGraph {
+  const category = parseTimeControlCategory(timeControl);
+  const stylePreview = getMusicStylePreview(category);
   const moveNodes: MoveNode[] = moves.map((m, idx) => ({
     ply: idx + 1,
     san: m.san,
@@ -61,5 +101,8 @@ export function buildEventGraph(
     anchors,
     totalPlies,
     targetDurationSec,
+    timeControl,
+    timeCategory: category,
+    musicStylePreview: stylePreview,
   };
 }

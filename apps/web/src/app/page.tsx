@@ -82,10 +82,20 @@ export default function HomePage() {
 
             {eventGraph && (
               <div className="glass-gold rounded-2xl p-6">
-                <h3 className="text-sm font-semibold text-gold-300 mb-3 uppercase tracking-wider">
-                  Event Graph Ready
-                </h3>
-                <p className="text-sm text-slate-400 mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-gold-300 uppercase tracking-wider">
+                    Event Graph Ready
+                  </h3>
+                  {eventGraph.timeCategory && (
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-gold-500/20 text-gold-300 font-mono uppercase">
+                      {eventGraph.timeCategory} {eventGraph.timeControl ? `(${eventGraph.timeControl})` : ''}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-slate-300 font-medium mb-1">
+                  Style: {eventGraph.musicStylePreview || 'Cinematic Orchestral'}
+                </p>
+                <p className="text-xs text-slate-400 mb-4">
                   {eventGraph.moves.length} moves analyzed · {eventGraph.anchors.length} anchors found
                 </p>
                 <GenerateButton
