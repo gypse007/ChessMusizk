@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Literal, Optional, Dict, Tuple
 
 try:
     from worker_mac.c2m_types import Anchor, AnchorIntent, AnchorKind, EventGraph, SoundtrackSpec, MoveNode
+    from worker_mac.timecontrol import TimeControl, parse_timecontrol, classify_speed
     from worker_mac.timeprofile import TimeProfile, extract_time_profile
 except ImportError:
     from c2m_types import Anchor, AnchorIntent, AnchorKind, EventGraph, SoundtrackSpec, MoveNode
+    from timecontrol import TimeControl, parse_timecontrol, classify_speed
     from timeprofile import TimeProfile, extract_time_profile
 
 
@@ -103,7 +106,18 @@ def event_graph_to_spec(
     if time_profile is None and pgn_str:
         time_profile = extract_time_profile(pgn_str)
 
-    speed_key = time_profile.speed if time_profile else "unknown"
+    if time_profile:
+        speed_key = time_profile.speed
+    else:
+        time_cat = getattr(graph, "timeCategory", None)
+        time_ctrl = getattr(graph, "timeControl", None)
+        if time_cat:
+            speed_key = time_cat
+        elif time_ctrl:
+            speed_key = classify_speed(parse_timecontrol(time_ctrl))
+        else:
+            speed_key = "unknown"
+
     profile = STYLE_PROFILES.get(speed_key, STYLE_PROFILES["unknown"])
 
     pace_s = time_profile.pace_median_s if time_profile else None
@@ -117,21 +131,31 @@ def event_graph_to_spec(
     anchors: list[Anchor] = []
 
     for idx, node in enumerate(moves):
+        phase = _classify_phase(total_plies, node.ply)
         if node.flags.get("queenExchange"):
             anchors.append(Anchor(ply=node.ply, kind="queen_exchange", intent="texture_drop"))
-            caption_parts.append("sudden texture reduction")
+            if speed_key in ("ultrabullet", "bullet"):
+                caption_parts.append("filter sweep drop buildup")
+            else:
+                caption_parts.append("sudden texture reduction")
         elif node.flags.get("promotion"):
             anchors.append(Anchor(ply=node.ply, kind="promotion", intent="energy_peak"))
-            caption_parts.append("climax promotion")
+            if speed_key in ("ultrabullet", "bullet"):
+                caption_parts.append("euphoric main stage synth drop climax")
+            else:
+                caption_parts.append("climax crescendo")
         elif node.flags.get("passedPawnAdvance"):
-            caption_parts.append("passed pawn motif rises")
+            caption_parts.append("rising motif acceleration")
         elif node.classification == "blunder":
-            caption_parts.append("dissonant stinger")
+            caption_parts.append("dissonant glitch stinger")
         elif node.classification == "brilliant":
-            caption_parts.append("accented brilliant move")
+            caption_parts.append("explosive accent drop")
         elif node.flags.get("check"):
             anchors.append(Anchor(ply=node.ply, kind="check", intent="accent"))
-            caption_parts.append("rhythmic accent check")
+            if speed_key in ("ultrabullet", "bullet"):
+                caption_parts.append("rhythmic sidechain accent check")
+            else:
+                caption_parts.append("rhythmic accent check")
 
     if time_profile:
         if time_profile.premove_bursts > 0:
