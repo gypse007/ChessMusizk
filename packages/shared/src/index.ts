@@ -1,3 +1,57 @@
+import { z } from 'zod';
+
+export * from './timecontrol';
+export * from './timeprofile';
+
+export const SpeedSchema = z.enum([
+  'ultrabullet',
+  'bullet',
+  'blitz',
+  'rapid',
+  'classical',
+  'daily',
+  'unknown',
+]);
+
+export const TimeControlSchema = z.object({
+  raw: z.string(),
+  baseSeconds: z.number().nullable(),
+  incrementSeconds: z.number(),
+  delaySeconds: z.number(),
+  periods: z.array(z.object({ moves: z.number(), seconds: z.number() })).nullable(),
+  perMoveDays: z.number().nullable(),
+  speed: SpeedSchema,
+  estTotalSeconds: z.number(),
+});
+
+export const TimeProfileSchema = z.object({
+  speed: SpeedSchema,
+  paceMedianMs: z.number().nullable(),
+  minClockMs: z.number().nullable(),
+  zeitnotCount: z.number(),
+  maxThinkMs: z.number().nullable(),
+  flagged: z.boolean(),
+  premoveBursts: z.number(),
+  clockSwingMs: z.number(),
+});
+
+export const AnchorKindSchema = z.enum([
+  'pawn_storm_start',
+  'queen_exchange',
+  'promotion',
+  'false_climax',
+  'check',
+  'checkmate',
+  'reversal',
+  'zeitnot_tick',
+  'think_swell',
+  'flag_fall',
+  'premove_burst',
+  'clock_swing',
+]);
+
+export type AnchorKind = z.infer<typeof AnchorKindSchema>;
+
 export type MoveClass = 'brilliant' | 'good' | 'mistake' | 'blunder' | 'book' | 'forced';
 
 export interface MoveNode {
@@ -18,7 +72,6 @@ export interface MoveNode {
   };
 }
 
-export type AnchorKind = 'pawn_storm_start' | 'queen_exchange' | 'promotion' | 'false_climax' | 'check' | 'checkmate' | 'reversal';
 export type AnchorIntent = 'energy_peak' | 'texture_drop' | 'accent' | 'final_cadence' | 'interrupt';
 
 export interface Anchor {

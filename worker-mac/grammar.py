@@ -1,17 +1,89 @@
 from __future__ import annotations
 
-from typing import Literal
+from dataclasses import dataclass
+from typing import Literal, Optional, Dict, Tuple
 
-from worker_mac.c2m_types import Anchor, AnchorIntent, AnchorKind, EventGraph, SoundtrackSpec, MoveNode
+try:
+    from worker_mac.c2m_types import Anchor, AnchorIntent, AnchorKind, EventGraph, SoundtrackSpec, MoveNode
+    from worker_mac.timeprofile import TimeProfile, extract_time_profile
+except ImportError:
+    from c2m_types import Anchor, AnchorIntent, AnchorKind, EventGraph, SoundtrackSpec, MoveNode
+    from timeprofile import TimeProfile, extract_time_profile
 
 
 Phase = Literal["opening", "middlegame", "endgame"]
 
 
-GLOBAL_NEGATIVE_PROMPT = (
-    "no vocals, no lyrics, no EDM, no generic trailer braams, "
-    "no supersaw, no four-on-the-floor"
-)
+@dataclass(frozen=True)
+class StyleProfile:
+    bpm: Tuple[int, int]
+    style: str
+    arc: str
+    negative: str  # customized per tier -- bullet deliberately omits "no EDM"
+
+
+STYLE_PROFILES: Dict[str, StyleProfile] = {
+    "ultrabullet": StyleProfile(
+        (132, 142),
+        "glitch percussion, screaming lead synth, sub-bass drops, hyperdrive tempo",
+        "flat-out sprint, constant drops, zero development",
+        "no slow tempo, no orchestral",
+    ),
+    "bullet": StyleProfile(
+        (124, 132),
+        "energetic synth bass, euphoric supersaw chords, four-on-the-floor, pluck leads, festival drive",
+        "drop arrives in the first section; build-drop-build",
+        "no ballad, no ambient intro, no orchestra",
+    ),
+    "blitz": StyleProfile(
+        (110, 124),
+        "hybrid electronic-orchestral: staccato strings over synth pulse, trailer brass hits",
+        "driving build, tension stacks, hybrid drop",
+        "no lo-fi, no jazz",
+    ),
+    "rapid": StyleProfile(
+        (72, 96),
+        "intimate cinematic orchestral: felt piano, cello, warm strings",
+        "slow arc, rising spiccato tension, reflective resolve",
+        "no EDM, no four-on-the-floor",
+    ),
+    "classical": StyleProfile(
+        (60, 84),
+        "felt piano intro, cello lead, string swells, timpani",
+        "long-form arch: quiet opening, long tension rise, late climax",
+        "no EDM, no electronic drums",
+    ),
+    "daily": StyleProfile(
+        (60, 80),
+        "thoughtful felt piano, expansive ambient pads, subtle string warmth",
+        "contemplative arc, gentle movement, spacious resolution",
+        "no EDM, no heavy drums",
+    ),
+    "unknown": StyleProfile(
+        (96, 112),
+        "neutral cinematic hybrid",
+        "moderate arc",
+        "",
+    ),
+}
+
+
+BASE_NEGATIVE_PROMPT = "no vocals, no lyrics"
+
+
+def get_negative_prompt_for_style(style_key: str) -> str:
+    profile = STYLE_PROFILES.get(style_key, STYLE_PROFILES["unknown"])
+    if profile.negative:
+        return f"{BASE_NEGATIVE_PROMPT}, {profile.negative}"
+    return BASE_NEGATIVE_PROMPT
+
+
+def pick_bpm(p: StyleProfile, pace_median_s: Optional[float]) -> int:
+    lo, hi = p.bpm
+    if pace_median_s is None:
+        return (lo + hi) // 2
+    t = max(0.0, min(1.0, (8.0 - pace_median_s) / 7.0))  # faster pace -> higher BPM
+    return round(lo + (hi - lo) * t)
 
 
 def _classify_phase(total_plies: int, ply: int) -> Phase:
@@ -23,27 +95,28 @@ def _classify_phase(total_plies: int, ply: int) -> Phase:
     return "endgame"
 
 
-def _music_for_phase(phase: Phase) -> tuple[str, int]:
-    if phase == "opening":
-        return "felt piano and cello, sparse, rubato, intimate cinematic instrumental", 72
-    if phase == "middlegame":
-        return "spiccato strings, controlled dissonance, rising tension, rhythmic acceleration", 110
-    return "low cello and double bass, cold texture, sparse, unresolved harmony", 68
+def event_graph_to_spec(
+    graph: EventGraph,
+    pgn_str: Optional[str] = None,
+    time_profile: Optional[TimeProfile] = None,
+) -> SoundtrackSpec:
+    if time_profile is None and pgn_str:
+        time_profile = extract_time_profile(pgn_str)
 
+    speed_key = time_profile.speed if time_profile else "unknown"
+    profile = STYLE_PROFILES.get(speed_key, STYLE_PROFILES["unknown"])
 
-def event_graph_to_spec(graph: EventGraph) -> SoundtrackSpec:
+    pace_s = time_profile.pace_median_s if time_profile else None
+    bpm = pick_bpm(profile, pace_s)
+    negative_prompt = get_negative_prompt_for_style(speed_key)
+
     moves = graph.moves
     total_plies = graph.totalPlies
     target_sec = graph.targetDurationSec
-    bpm = 72
     caption_parts: list[str] = []
     anchors: list[Anchor] = []
 
     for idx, node in enumerate(moves):
-        phase = _classify_phase(total_plies, node.ply)
-        base_caption, phase_bpm = _music_for_phase(phase)
-        bpm = max(bpm, phase_bpm) if phase == "middlegame" else min(bpm, phase_bpm) if phase == "endgame" else bpm
-
         if node.flags.get("queenExchange"):
             anchors.append(Anchor(ply=node.ply, kind="queen_exchange", intent="texture_drop"))
             caption_parts.append("sudden texture reduction")
@@ -60,11 +133,20 @@ def event_graph_to_spec(graph: EventGraph) -> SoundtrackSpec:
             anchors.append(Anchor(ply=node.ply, kind="check", intent="accent"))
             caption_parts.append("rhythmic accent check")
 
+    if time_profile:
+        if time_profile.premove_bursts > 0:
+            caption_parts.append("rapid premove bursts")
+        if time_profile.zeitnot_count > 0:
+            caption_parts.append("zeitnot ticking pressure")
+        if time_profile.flagged:
+            anchors.append(Anchor(ply=total_plies, kind="flag_fall", intent="final_cadence"))
+            caption_parts.append("flag fall tape-stop power-down")
+
     if not anchors:
         anchors.append(Anchor(ply=total_plies, kind="checkmate", intent="final_cadence"))
 
-    caption = ", ".join(caption_parts) if caption_parts else base_caption
-    caption = f"{caption}, {GLOBAL_NEGATIVE_PROMPT}"
+    details = ", ".join(caption_parts) if caption_parts else "balanced tactical progression"
+    caption = f"{profile.style}, {profile.arc}, {details}"
 
     return SoundtrackSpec(
         caption=caption,
@@ -73,6 +155,6 @@ def event_graph_to_spec(graph: EventGraph) -> SoundtrackSpec:
         seed=-1,
         instrumental=True,
         batchSize=2,
-        negativePrompt=GLOBAL_NEGATIVE_PROMPT,
+        negativePrompt=negative_prompt,
         anchors=anchors,
     )
