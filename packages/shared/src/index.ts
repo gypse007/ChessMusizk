@@ -1,5 +1,13 @@
 export type MoveClass = 'brilliant' | 'good' | 'mistake' | 'blunder' | 'book' | 'forced';
 
+export interface MoveFlags {
+  check?: boolean;
+  capture?: boolean;
+  promotion?: boolean;
+  queenExchange?: boolean;
+  passedPawnAdvance?: boolean;
+}
+
 export interface MoveNode {
   ply: number;
   san: string;
@@ -9,17 +17,28 @@ export interface MoveNode {
   evalSwing: number;
   classification: MoveClass;
   phase: 'opening' | 'middlegame' | 'endgame';
-  flags: {
-    check?: boolean;
-    capture?: boolean;
-    promotion?: boolean;
-    queenExchange?: boolean;
-    passedPawnAdvance?: boolean;
-  };
+  flags: MoveFlags;
 }
 
-export type AnchorKind = 'pawn_storm_start' | 'queen_exchange' | 'promotion' | 'false_climax' | 'check' | 'checkmate' | 'reversal';
+export type AnchorKind =
+  | 'pawn_storm_start'
+  | 'queen_exchange'
+  | 'promotion'
+  | 'false_climax'
+  | 'check'
+  | 'checkmate'
+  | 'reversal'
+  | 'zeitnot_tick'
+  | 'premove_burst'
+  | 'flag_fall'
+  | 'hard_cut'
+  | 'unresolved_fade';
+
 export type AnchorIntent = 'energy_peak' | 'texture_drop' | 'accent' | 'final_cadence' | 'interrupt';
+
+export type SpeedTier = 'ultrabullet' | 'bullet' | 'blitz' | 'rapid' | 'classical' | 'daily' | 'unknown';
+
+export type TerminationKind = 'checkmate' | 'resignation' | 'timeout' | 'stalemate' | 'draw' | 'unknown';
 
 export interface Anchor {
   ply: number;
@@ -31,16 +50,18 @@ export interface EventGraph {
   moves: MoveNode[];
   anchors: Anchor[];
   totalPlies: number;
-  targetDurationSec: 60 | 75;
+  targetDurationSec: number;
+  termination?: TerminationKind;
+  speedTier?: SpeedTier;
 }
 
 export interface SoundtrackSpec {
   caption: string;
   bpm: number;
-  durationSec: 60 | 75;
+  durationSec: number;
   seed: number;
-  instrumental: true;
-  batchSize: 2;
+  instrumental: boolean;
+  batchSize: number;
   negativePrompt: string;
   anchors: Anchor[];
 }
@@ -52,13 +73,19 @@ export interface Landmark {
   type: LandmarkType;
 }
 
+export interface AnchorMapEntry {
+  ply: number;
+  tSec: number;
+  kind?: string;
+}
+
 export interface Take {
   id: string;
   audioUrl: string;
   seed: number;
   landmarks: Landmark[];
-  anchorMap: { ply: number; tSec: number }[];
-  watermarked: true;
+  anchorMap: AnchorMapEntry[];
+  watermarked: boolean;
 }
 
 export type JobStatus = 'queued' | 'analyzing' | 'arc' | 'composing' | 'mastering' | 'done' | 'failed';
