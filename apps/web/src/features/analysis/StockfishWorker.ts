@@ -92,6 +92,7 @@ export async function analyzePgn(
     anchors,
     totalPlies: moves.length,
     targetDurationSec: 60,
+    termination: 'checkmate',
   };
 }
 

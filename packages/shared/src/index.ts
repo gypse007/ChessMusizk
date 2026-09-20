@@ -33,6 +33,10 @@ export const TimeProfileSchema = z.object({
   flagged: z.boolean(),
   premoveBursts: z.number(),
   clockSwingMs: z.number(),
+  zeitnotPlies: z.array(z.number()),
+  premoveBurstPlies: z.array(z.number()),
+  thinkSwellPlies: z.array(z.number()),
+  clockSwingPly: z.number().nullable(),
 });
 
 export const AnchorKindSchema = z.enum([
@@ -48,11 +52,31 @@ export const AnchorKindSchema = z.enum([
   'flag_fall',
   'premove_burst',
   'clock_swing',
+  'resignation',
+  'draw_fade',
+]);
+
+export const TerminationKindSchema = z.enum([
+  'checkmate',
+  'resignation',
+  'timeout',
+  'draw',
+  'stalemate',
+  'unknown',
 ]);
 
 export type AnchorKind = z.infer<typeof AnchorKindSchema>;
+export type TerminationKind = z.infer<typeof TerminationKindSchema>;
 
 export type MoveClass = 'brilliant' | 'good' | 'mistake' | 'blunder' | 'book' | 'forced';
+
+export interface MoveFlags {
+  check?: boolean;
+  capture?: boolean;
+  promotion?: boolean;
+  queenExchange?: boolean;
+  passedPawnAdvance?: boolean;
+}
 
 export interface MoveNode {
   ply: number;
@@ -63,13 +87,7 @@ export interface MoveNode {
   evalSwing: number;
   classification: MoveClass;
   phase: 'opening' | 'middlegame' | 'endgame';
-  flags: {
-    check?: boolean;
-    capture?: boolean;
-    promotion?: boolean;
-    queenExchange?: boolean;
-    passedPawnAdvance?: boolean;
-  };
+  flags: MoveFlags;
 }
 
 export type AnchorIntent = 'energy_peak' | 'texture_drop' | 'accent' | 'final_cadence' | 'interrupt';
@@ -85,6 +103,7 @@ export interface EventGraph {
   anchors: Anchor[];
   totalPlies: number;
   targetDurationSec: 60 | 75;
+  termination: TerminationKind;
 }
 
 export interface SoundtrackSpec {
@@ -105,12 +124,18 @@ export interface Landmark {
   type: LandmarkType;
 }
 
+export interface AnchorMapEntry {
+  ply: number;
+  tSec: number;
+  kind: AnchorKind;
+}
+
 export interface Take {
   id: string;
   audioUrl: string;
   seed: number;
   landmarks: Landmark[];
-  anchorMap: { ply: number; tSec: number }[];
+  anchorMap: AnchorMapEntry[];
   watermarked: true;
 }
 

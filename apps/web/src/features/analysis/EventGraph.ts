@@ -61,5 +61,6 @@ export function buildEventGraph(
     anchors,
     totalPlies,
     targetDurationSec,
+    termination: 'checkmate',
   };
 }

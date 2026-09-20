@@ -4,10 +4,12 @@ import {
   classifySpeed,
   clkSeconds,
   extractTimeProfile,
+  parseTerminationKind,
   SpeedSchema,
   TimeControlSchema,
   TimeProfileSchema,
   AnchorKindSchema,
+  TerminationKindSchema,
 } from '../index';
 
 const GOLDEN_FIXTURES: Array<[string | null | undefined, string]> = [
@@ -47,7 +49,7 @@ describe('TimeControl parity and speed classification', () => {
     expect(clkSeconds('no clk')).toBeNull();
   });
 
-  it('extracts TimeProfile with zeitnot and minClock', () => {
+  it('extracts TimeProfile with zeitnot and minClock and zeitnotPlies', () => {
     const pgn = `[Event "Blitz"]
 [TimeControl "180+2"]
 [Termination "Normal"]
@@ -59,17 +61,29 @@ describe('TimeControl parity and speed classification', () => {
     expect(profile.speed).toBe('blitz');
     expect(profile.zeitnotCount).toBe(2);
     expect(profile.minClockMs).toBe(5000);
+    expect(profile.zeitnotPlies).toEqual([3, 4]);
   });
 
-  it('validates Zod schemas', () => {
+  it('parses termination kind from headers', () => {
+    expect(parseTerminationKind('1-0', 'Time forfeit')).toBe('timeout');
+    expect(parseTerminationKind('0-1', 'Resignation')).toBe('resignation');
+    expect(parseTerminationKind('1/2-1/2', 'Draw by agreement')).toBe('draw');
+  });
+
+  it('throws on empty game PGN', () => {
+    expect(() => extractTimeProfile('')).toThrow('empty game');
+  });
+
+  it('validates Zod schemas including TerminationKindSchema', () => {
     expect(SpeedSchema.parse('bullet')).toBe('bullet');
     expect(AnchorKindSchema.parse('zeitnot_tick')).toBe('zeitnot_tick');
+    expect(TerminationKindSchema.parse('resignation')).toBe('resignation');
 
     const tc = parseTimeControl('60+1');
     const tcData = { ...tc, speed: classifySpeed(tc) };
     expect(TimeControlSchema.safeParse(tcData).success).toBe(true);
 
-    const profile = extractTimeProfile('[TimeControl "60+1"]');
+    const profile = extractTimeProfile('[TimeControl "60+1"]\n1. e4 e5');
     expect(TimeProfileSchema.safeParse(profile).success).toBe(true);
   });
 });

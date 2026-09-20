@@ -3,15 +3,17 @@ from __future__ import annotations
 import io
 import re
 import statistics
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional, List, Dict, Tuple
 
 import chess.pgn
 
 try:
     from worker_mac.timecontrol import parse_timecontrol, classify_speed, TimeControl
+    from worker_mac.c2m_types import TerminationKind
 except ImportError:
     from timecontrol import parse_timecontrol, classify_speed, TimeControl
+    from c2m_types import TerminationKind
 
 
 CLK_RE = re.compile(r"\[?%clk\s+(\d+):(\d{1,2}):(\d{1,2}(?:\.\d+)?)\]?")
@@ -48,8 +50,13 @@ class TimeProfile:
     zeitnot_count: int = 0  # moves made with <10s left
     max_single_think_s: Optional[float] = None
     flagged: bool = False  # Termination contains "time" AND last clock ≈ 0
-    premove_bursts: int = 0  # negative clock deltas (increment pushed clock UP)
+    premove_bursts: int = 0  # negative clock deltas
     clock_swing_s: float = 0.0  # max |white - black| clock gap mid-game
+    zeitnot_plies: List[int] = field(default_factory=list)
+    premove_burst_plies: List[int] = field(default_factory=list)
+    think_swell_plies: List[int] = field(default_factory=list)
+    clock_swing_ply: Optional[int] = None
+    termination_kind: TerminationKind = "unknown"
 
 
 def infer_speed_from_pace(pace_median_s: Optional[float]) -> str:
@@ -64,24 +71,45 @@ def infer_speed_from_pace(pace_median_s: Optional[float]) -> str:
     return "classical"
 
 
+def parse_termination_kind(result: str, termination: str) -> TerminationKind:
+    res = (result or "").strip()
+    term = (termination or "").lower().strip()
+
+    if "time" in term or "forfeit" in term:
+        return "timeout"
+    if "resign" in term or "abandon" in term:
+        return "resignation"
+    if "stalemate" in term:
+        return "stalemate"
+    if "draw" in term or res == "1/2-1/2":
+        return "draw"
+    if "checkmate" in term or "normal" in term or res in ("1-0", "0-1"):
+        return "checkmate"
+
+    return "unknown"
+
+
 def extract_time_profile(
     pgn_str: str,
     force_speed: Optional[str] = None,
     thresholds: Optional[Dict[str, float]] = None,
 ) -> TimeProfile:
     game = chess.pgn.read_game(io.StringIO(pgn_str))
-    tc_raw = game.headers.get("TimeControl") if game else None
-    termination = (game.headers.get("Termination") or "").lower() if game else ""
+    if not game:
+        raise ValueError("empty game")
+
+    tc_raw = game.headers.get("TimeControl")
+    termination_str = game.headers.get("Termination") or ""
+    result_str = game.headers.get("Result") or ""
+
+    term_kind = parse_termination_kind(result_str, termination_str)
 
     tc = parse_timecontrol(tc_raw)
     speed = classify_speed(tc, thresholds=thresholds, force_speed=force_speed)
 
-    if not game:
-        return TimeProfile(speed=speed)
-
     white_clocks: List[Tuple[int, float]] = []  # (ply, clock_s)
     black_clocks: List[Tuple[int, float]] = []
-    think_times: List[float] = []
+    think_times: List[Tuple[int, float]] = []
 
     node = game
     ply = 0
@@ -89,9 +117,10 @@ def extract_time_profile(
     last_b_clock: Optional[float] = None
 
     min_clock: Optional[float] = None
-    zeitnot_count = 0
-    premove_bursts = 0
-    clock_swings: List[float] = []
+    zeitnot_plies: List[int] = []
+    premove_burst_plies: List[int] = []
+    think_swell_plies: List[int] = []
+    clock_swings: List[Tuple[int, float]] = []  # (ply, gap)
 
     while node.variations:
         next_node = node.variation(0)
@@ -106,16 +135,18 @@ def extract_time_profile(
             if min_clock is None or clk < min_clock:
                 min_clock = clk
             if clk < 10.0:
-                zeitnot_count += 1
+                zeitnot_plies.append(ply)
 
             prev_clock = last_w_clock if is_white else last_b_clock
             if prev_clock is not None:
-                # Spent time = prev_clock - cur_clock (or considering increment)
                 raw_delta = prev_clock - clk
                 if raw_delta < 0:
-                    premove_bursts += 1
+                    premove_burst_plies.append(ply)
                 spent = prev_clock + tc.increment - clk
-                think_times.append(max(0.0, spent if spent >= 0 else 0.0))
+                actual_spent = max(0.0, spent if spent >= 0 else 0.0)
+                think_times.append((ply, actual_spent))
+                if actual_spent >= 30.0:
+                    think_swell_plies.append(ply)
 
             if is_white:
                 last_w_clock = clk
@@ -125,20 +156,30 @@ def extract_time_profile(
                 black_clocks.append((ply, clk))
 
             if last_w_clock is not None and last_b_clock is not None:
-                clock_swings.append(abs(last_w_clock - last_b_clock))
+                clock_swings.append((ply, abs(last_w_clock - last_b_clock)))
         elif emt is not None:
-            think_times.append(emt)
+            think_times.append((ply, emt))
+            if emt >= 30.0:
+                think_swell_plies.append(ply)
 
         node = next_node
 
-    pace_median = statistics.median(think_times) if think_times else None
-    max_think = max(think_times) if think_times else None
-    max_clock_swing = max(clock_swings) if clock_swings else 0.0
+    if ply == 0:
+        raise ValueError("empty game")
 
-    # Flag check: termination mentions "time" and min_clock <= 1.0 or last mover ran out
-    flagged = ("time" in termination) and (min_clock is not None and min_clock <= 1.0)
+    spent_vals = [t[1] for t in think_times]
+    pace_median = statistics.median(spent_vals) if spent_vals else None
+    max_think = max(spent_vals) if spent_vals else None
 
-    # Pace inference fallback if speed is "unknown"
+    max_swing = 0.0
+    swing_ply: Optional[int] = None
+    if clock_swings:
+        max_swing_tuple = max(clock_swings, key=lambda x: x[1])
+        swing_ply = max_swing_tuple[0]
+        max_swing = max_swing_tuple[1]
+
+    flagged = (term_kind == "timeout") or (min_clock is not None and min_clock <= 1.0)
+
     if speed == "unknown" and pace_median is not None:
         speed = infer_speed_from_pace(pace_median)
 
@@ -146,9 +187,14 @@ def extract_time_profile(
         speed=speed,
         pace_median_s=pace_median,
         min_clock_s=min_clock,
-        zeitnot_count=zeitnot_count,
+        zeitnot_count=len(zeitnot_plies),
         max_single_think_s=max_think,
         flagged=flagged,
-        premove_bursts=premove_bursts,
-        clock_swing_s=max_clock_swing,
+        premove_bursts=len(premove_burst_plies),
+        clock_swing_s=max_swing,
+        zeitnot_plies=zeitnot_plies,
+        premove_burst_plies=premove_burst_plies,
+        think_swell_plies=think_swell_plies,
+        clock_swing_ply=swing_ply,
+        termination_kind=term_kind,
     )
