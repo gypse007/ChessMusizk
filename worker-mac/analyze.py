@@ -8,7 +8,10 @@ from typing import Literal
 import librosa
 import numpy as np
 
-from packages.shared.src.index import Anchor, Landmark, LandmarkType
+try:
+    from worker_mac.c2m_types import Anchor, Landmark
+except ModuleNotFoundError:
+    from c2m_types import Anchor, Landmark
 
 
 def analyze_audio(file_path: str) -> tuple[list[Landmark], dict[int, float]]:

@@ -1,11 +1,8 @@
 import type { MoveNode, MoveClass, Anchor, EventGraph } from '@chess-to-music/shared';
+import { parseTimeControlCategory, getMusicStylePreview } from './EventGraph';
 
 const WORKER_PATH = '/engine/stockfish.js';
 
-interface SFMessage {
-  type: string;
-  data?: string;
-}
 
 let worker: Worker | null = null;
 let ready = false;
@@ -14,12 +11,18 @@ const onReadyCbs: Array<() => void> = [];
 function getWorker(): Worker {
   if (!worker) {
     worker = new Worker(WORKER_PATH);
-    worker.onmessage = (e: MessageEvent<SFMessage>) => {
-      if (e.data.type === 'ready') {
+    worker.onmessage = (_e: MessageEvent) => {
+      if (!ready) {
         ready = true;
         onReadyCbs.forEach(cb => cb());
       }
     };
+    setTimeout(() => {
+      if (!ready) {
+        ready = true;
+        onReadyCbs.forEach(cb => cb());
+      }
+    }, 300);
   }
   return worker;
 }
@@ -87,12 +90,24 @@ export async function analyzePgn(
     onProgress?.(i + 1, moves.length);
   }
 
+  const timeControl = extractTimeControl(pgn);
+  const timeCategory = parseTimeControlCategory(timeControl);
+  const musicStylePreview = getMusicStylePreview(timeCategory);
+
   return {
     moves: moveNodes,
     anchors,
     totalPlies: moves.length,
-    targetDurationSec: 60,
+    targetDurationSec: moves.length > 100 ? 75 : 60,
+    timeControl,
+    timeCategory,
+    musicStylePreview,
   };
+}
+
+function extractTimeControl(pgn: string): string | undefined {
+  const match = pgn.match(/\[TimeControl\s+"([^"]+)"\]/i);
+  return match ? match[1] : undefined;
 }
 
 function extractMoves(pgn: string): string[] {
@@ -105,12 +120,17 @@ async function evaluateMove(w: Worker, fen: string, san: string): Promise<number
   return new Promise((resolve) => {
     const id = Math.random();
     const handler = (e: MessageEvent) => {
-      if (e.data?.id !== id) return;
-      w.removeEventListener('message', handler);
-      resolve(e.data.eval || 0);
+      if (e.data?.id === id) {
+        w.removeEventListener('message', handler);
+        resolve(e.data.eval || 0);
+      }
     };
     w.addEventListener('message', handler);
     w.postMessage({ type: 'eval', id, fen, san });
+    setTimeout(() => {
+      w.removeEventListener('message', handler);
+      resolve(0);
+    }, 50);
   });
 }
 

@@ -27,11 +27,16 @@ export interface Anchor {
   intent: AnchorIntent;
 }
 
+export type TimeControlCategory = 'ultrabullet' | 'bullet' | 'blitz' | 'rapid' | 'classical' | 'daily' | 'unknown';
+
 export interface EventGraph {
   moves: MoveNode[];
   anchors: Anchor[];
   totalPlies: number;
   targetDurationSec: 60 | 75;
+  timeControl?: string;
+  timeCategory?: TimeControlCategory;
+  musicStylePreview?: string;
 }
 
 export interface SoundtrackSpec {
