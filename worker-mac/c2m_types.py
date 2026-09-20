@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 
 MoveClass = str  # 'brilliant' | 'good' | 'mistake' | 'blunder' | 'book' | 'forced'
-AnchorKind = str  # 'pawn_storm_start' | 'queen_exchange' | 'promotion' | 'false_climax' | 'check' | 'checkmate' | 'reversal'
+AnchorKind = str  # 'pawn_storm_start' | 'queen_exchange' | 'promotion' | 'false_climax' | 'check' | 'checkmate' | 'reversal' | 'zeitnot_tick' | 'think_swell' | 'flag_fall' | 'premove_burst' | 'clock_swing'
 AnchorIntent = str  # 'energy_peak' | 'texture_drop' | 'accent' | 'final_cadence' | 'interrupt'
 JobStatus = str  # 'queued' | 'analyzing' | 'arc' | 'composing' | 'mastering' | 'done' | 'failed'
 
