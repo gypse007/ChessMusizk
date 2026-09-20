@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from typing import Literal, Optional, Dict, Tuple
 
 try:
     from worker_mac.c2m_types import Anchor, AnchorIntent, AnchorKind, EventGraph, SoundtrackSpec, MoveNode
+    from worker_mac.timecontrol import TimeControl, parse_timecontrol, classify_speed
     from worker_mac.timeprofile import TimeProfile, extract_time_profile
 except ImportError:
     from c2m_types import Anchor, AnchorIntent, AnchorKind, EventGraph, SoundtrackSpec, MoveNode
+    from timecontrol import TimeControl, parse_timecontrol, classify_speed
     from timeprofile import TimeProfile, extract_time_profile
 
 
@@ -31,7 +34,7 @@ STYLE_PROFILES: Dict[str, StyleProfile] = {
     ),
     "bullet": StyleProfile(
         (124, 132),
-        "energetic synth bass, euphoric supersaw chords, four-on-the-floor, pluck leads, festival drive",
+        "energetic synth bass, euphoric supersaw chords, four-on-the-floor, pluck leads, festival drive, live festival EDM anthem, main stage euphoria",
         "drop arrives in the first section; build-drop-build",
         "no ballad, no ambient intro, no orchestra",
     ),
@@ -103,7 +106,16 @@ def event_graph_to_spec(
     if time_profile is None and pgn_str:
         time_profile = extract_time_profile(pgn_str)
 
-    speed_key = time_profile.speed if time_profile else "unknown"
+    if time_profile and time_profile.speed != "unknown":
+        speed_key = time_profile.speed
+    elif getattr(graph, "timeCategory", None):
+        speed_key = graph.timeCategory
+    elif getattr(graph, "timeControl", None):
+        tc = parse_timecontrol(graph.timeControl)
+        speed_key = classify_speed(tc)
+    else:
+        speed_key = "unknown"
+
     profile = STYLE_PROFILES.get(speed_key, STYLE_PROFILES["unknown"])
 
     pace_s = time_profile.pace_median_s if time_profile else None
@@ -117,21 +129,28 @@ def event_graph_to_spec(
     anchors: list[Anchor] = []
 
     for idx, node in enumerate(moves):
+        phase = _classify_phase(total_plies, node.ply)
         if node.flags.get("queenExchange"):
             anchors.append(Anchor(ply=node.ply, kind="queen_exchange", intent="texture_drop"))
-            caption_parts.append("sudden texture reduction")
+            if speed_key in ("ultrabullet", "bullet"):
+                caption_parts.append("filter sweep drop buildup")
+            else:
+                caption_parts.append("sudden texture reduction")
         elif node.flags.get("promotion"):
             anchors.append(Anchor(ply=node.ply, kind="promotion", intent="energy_peak"))
-            caption_parts.append("climax promotion")
+            if speed_key in ("ultrabullet", "bullet"):
+                caption_parts.append("euphoric main stage synth drop climax")
+            else:
+                caption_parts.append("climax crescendo")
         elif node.flags.get("passedPawnAdvance"):
-            caption_parts.append("passed pawn motif rises")
+            caption_parts.append("rising motif acceleration")
         elif node.classification == "blunder":
-            caption_parts.append("dissonant stinger")
+            caption_parts.append("dissonant glitch stinger")
         elif node.classification == "brilliant":
-            caption_parts.append("accented brilliant move")
+            caption_parts.append("explosive accent drop")
         elif node.flags.get("check"):
             anchors.append(Anchor(ply=node.ply, kind="check", intent="accent"))
-            caption_parts.append("rhythmic accent check")
+            caption_parts.append("rhythmic sidechain accent check")
 
     if time_profile:
         if time_profile.premove_bursts > 0:
