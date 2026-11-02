@@ -1,0 +1,42 @@
+{
+  "event": "World Championship 24th Match",
+  "game_number": 6,
+  "site": "Moscow URS",
+  "date": "1960.03.26",
+  "white": {
+    "name": "Mikhail Botvinnik",
+    "title": "World Champion",
+    "rpg_boss_alias": "The Iron Patriarch"
+  },
+  "black": {
+    "name": "Mikhail Tal",
+    "title": "Challenger / 8th World Champion",
+    "rpg_legend_alias": "The Magician from Riga"
+  },
+  "eco": "E69",
+  "opening": "King's Indian Defence, Classical, Fianchetto",
+  "result": "0-1",
+  "tactical_turning_point": {
+    "ply": 42,
+    "move_number": 21,
+    "color": "black",
+    "move_san": "Nf4!!",
+    "move_uci": "e6f4",
+    "fen_before": "r1b2rk1/1pq1b1pp/4pn2/p1p2p2/2PP4/1P1B1N2/PB2QPPP/R4RK1 b - - 1 20",
+    "fen_sacrifice": "r1b2rk1/1pq1b1pp/5n2/p1p2p2/2PP1n2/1P1B1N2/PB2QPPP/R4RK1 w - - 2 22",
+    "nature": "Speculative, psychological chaos sacrifice",
+    "stockfish_evaluation_cp": -20,
+    "rpg_mechanic": "THE IMPOSSIBLE SACRIFICE",
+    "narrative": "Botvinnik had constructed a concrete, unassailable defensive center. Tal shatters the calculation tree by hurling a knight directly into the jaws of the pawn structure. Modern engines show the move is not objectively winning, but under human pressure, Botvinnik cracked within 4 moves."
+  },
+  "key_moves": [
+    {"ply": 41, "san": "Rad1", "side": "white", "comment": "Reinforcing the central battery"},
+    {"ply": 42, "san": "Nf4!!", "side": "black", "comment": "The chaos strike into f4"},
+    {"ply": 43, "san": "gxf4", "side": "white", "comment": "Accepting the bait"},
+    {"ply": 44, "san": "exf4", "side": "black", "comment": "Opening the King's lines and clearing e5"},
+    {"ply": 45, "san": "Bd2", "side": "white", "comment": "Botvinnik begins to lose the thread under extreme time pressure"},
+    {"ply": 46, "san": "Qf6", "side": "black", "comment": "Infiltrating the shattered kingside"},
+    {"ply": 47, "san": "Kh1", "side": "white", "comment": "Attempting king safety"},
+    {"ply": 48, "san": "b5!", "side": "black", "comment": "Undermining the entire queenside flank"}
+  ]
+}

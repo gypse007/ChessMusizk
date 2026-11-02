@@ -1,0 +1,139 @@
+{
+  "events": [
+    {
+      "chess_event": "brilliant_sacrifice",
+      "rpg_interpretation": "Sacrificial spell",
+      "trigger_conditions": "Stockfish eval delta >= +2.0 or intentional piece sacrifice with ongoing compensation",
+      "visual_treatment": "Piece dissolves into blinding aura; kinetic screen shake; impact sparks",
+      "audio_treatment": "Sub-bass explosion + glass shatter stinger",
+      "animation": "Zoom pulse, aura flare, particle shockwave",
+      "narrative": "The legend offers mortal blood to unleash primordial power"
+    },
+    {
+      "chess_event": "forced_checkmate",
+      "rpg_interpretation": "Boss execution",
+      "trigger_conditions": "Mate sequence detected (mate in N)",
+      "visual_treatment": "Dimensional freeze; rune guillotine descent; boss disintegration",
+      "audio_treatment": "Final orchestral doom hit + ticking clock stop",
+      "animation": "Extreme close-up on King, monochrome flash, red shatter",
+      "narrative": "The sanctuary collapses; the ruler is judged"
+    },
+    {
+      "chess_event": "queen_sacrifice",
+      "rpg_interpretation": "Ultimate ability",
+      "trigger_conditions": "Queen captured or surrendered intentionally for tactical win",
+      "visual_treatment": "Supernova screen explosion; full frame chromatic inversion",
+      "audio_treatment": "Muffled silence into titanic bass drop",
+      "animation": "Queen portrait flashes and fragments into golden embers",
+      "narrative": "The ultimate asset surrendered to manifest guaranteed victory"
+    },
+    {
+      "chess_event": "fork",
+      "rpg_interpretation": "Multi-target attack",
+      "trigger_conditions": "Single piece simultaneously attacking >= 2 higher or equal value pieces",
+      "visual_treatment": "Split laser targeting beams from attacker to targets",
+      "audio_treatment": "Double lightning crack SFX",
+      "animation": "Target icons flash red with warning reticles",
+      "narrative": "A solitary blade threatening multiple vital organs at once"
+    },
+    {
+      "chess_event": "pin",
+      "rpg_interpretation": "Enemy immobilization",
+      "trigger_conditions": "Piece unable to move without exposing King or valuable piece",
+      "visual_treatment": "Runic chains anchoring the pinned piece to the ground",
+      "audio_treatment": "Heavy iron chain rattle and lock",
+      "animation": "Chains wrap around piece sprite; movement locked icon",
+      "narrative": "The enemy's champion is bound by duty, unable to flee"
+    },
+    {
+      "chess_event": "skewer",
+      "rpg_interpretation": "Piercing attack",
+      "trigger_conditions": "Attack on high-value piece that forces retreat to expose piece behind",
+      "visual_treatment": "Laser spear passing completely through front target into rear",
+      "audio_treatment": "High-velocity piercing whistle + double thud",
+      "animation": "Piercing beam drills through both squares",
+      "narrative": "A strike that pierces the vanguard to bleed the rear guard"
+    },
+    {
+      "chess_event": "discovered_attack",
+      "rpg_interpretation": "Hidden weapon",
+      "trigger_conditions": "Moving one piece unmasks a line of attack from another",
+      "visual_treatment": "Forward piece shadow slides aside, revealing glowing glyph behind",
+      "audio_treatment": "Unsheathing katana sound + sinister chord",
+      "animation": "Shadow dodge followed by sudden beam firing",
+      "narrative": "The obvious threat was merely a distraction for the blade in the dark"
+    },
+    {
+      "chess_event": "promotion",
+      "rpg_interpretation": "Character evolution",
+      "trigger_conditions": "Pawn reaches 8th/1st rank",
+      "visual_treatment": "Golden ascending pillar of light; armor materialization",
+      "audio_treatment": "Ascension choir + heavenly brass fanfare",
+      "animation": "Pawn sprite dissolves into glowing Valkyrie Queen",
+      "narrative": "The foot soldier ascends to godhood upon the final square"
+    },
+    {
+      "chess_event": "castling",
+      "rpg_interpretation": "Defensive transformation",
+      "trigger_conditions": "O-O or O-O-O executed",
+      "visual_treatment": "Granite fortress walls erupt from the board between King and Rook",
+      "audio_treatment": "Massive stone grinding into place + lock mechanism",
+      "animation": "King glides behind reinforced tower ramparts",
+      "narrative": "The King seals himself behind ancient bastions"
+    },
+    {
+      "chess_event": "zugzwang",
+      "rpg_interpretation": "Enemy trapped by choices",
+      "trigger_conditions": "Any legal move by opponent degrades evaluation significantly",
+      "visual_treatment": "Black tendrils constricting all available move squares",
+      "audio_treatment": "Slow suffocation gasps + low discordant drone",
+      "animation": "Square highlights shrink and turn into skull markers",
+      "narrative": "Every choice is death; the dungeon suffocates its prey"
+    },
+    {
+      "chess_event": "check",
+      "rpg_interpretation": "Incoming threat",
+      "trigger_conditions": "King directly attacked",
+      "visual_treatment": "Red pulsating border around the board; warning sirens",
+      "audio_treatment": "Sharp metallic heartbeat / alarm pulse",
+      "animation": "Target lock on King's crown",
+      "narrative": "The enemy's blade grazes the royal throat"
+    },
+    {
+      "chess_event": "blunder",
+      "rpg_interpretation": "Failed defence",
+      "trigger_conditions": "Stockfish eval swing >= -2.5 cp for mover",
+      "visual_treatment": "Armor cracking, glitch artifacting, red exclamation marks",
+      "audio_treatment": "Dull thud + comical or tragic record-scratch / sub drop",
+      "animation": "Piece trips / shivers under immense error highlight",
+      "narrative": "A fatal misstep opens the gate to slaughter"
+    },
+    {
+      "chess_event": "comeback",
+      "rpg_interpretation": "Second-phase boss battle",
+      "trigger_conditions": "Eval swings from -3.0 to +1.0 within 5 plies",
+      "visual_treatment": "Phoenix flame burst; darkened screen lights up in gold",
+      "audio_treatment": "Uplifting orchestral battle surge / Phonk drop",
+      "animation": "Hero health bar refills with fiery barrier",
+      "narrative": "Rising from the ashes of impending defeat to seize victory"
+    },
+    {
+      "chess_event": "time_scramble",
+      "rpg_interpretation": "Countdown battle",
+      "trigger_conditions": "Clock time < 30 seconds with intense move density",
+      "visual_treatment": "Red digital countdown timer spinning violently; speed ramp blur",
+      "audio_treatment": "Accelerating clock ticking into sirens",
+      "animation": "Rapid blur trails on every piece glide",
+      "narrative": "The realm collapses in seconds; only instinct survives"
+    },
+    {
+      "chess_event": "stalemate",
+      "rpg_interpretation": "Unexpected draw ending",
+      "trigger_conditions": "No legal moves and not in check",
+      "visual_treatment": "Time freezes in sepia ice; mutual shield lock",
+      "audio_treatment": "Abrupt harmonic suspension / wind blowing",
+      "animation": "Both sides locked in eternal stone stasis",
+      "narrative": "The magic nullifies; neither master claims the soul"
+    }
+  ]
+}
