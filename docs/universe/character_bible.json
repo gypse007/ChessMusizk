@@ -1,0 +1,154 @@
+{
+  "legends": [
+    {
+      "id": "legend_001_tal",
+      "name": "Mikhail Tal",
+      "title": "The Magician from Riga",
+      "archetype": "Chaos Strategist",
+      "signature_ability": "THE IMPOSSIBLE SACRIFICE",
+      "dungeon": "The Forgotten Sanctum",
+      "boss_enemy": "The Iron Patriarch",
+      "tactical_weakness": "Deep positional endgames with simplified structures",
+      "signature_chess_mechanic": "Speculative piece sacrifices creating chaotic initiative",
+      "visual_identity": {
+        "primary_color": "#8b5cf6",
+        "secondary_color": "#dc2626",
+        "aura": "Void Violet Plasma",
+        "environment": "Crumbling obsidian ruins, floating runic stones, violet mist"
+      },
+      "sound_identity": "Phonk 808 sub-bass, glass-shattering risers, dark orchestral choir",
+      "character_stats": {
+        "tactics": 99,
+        "calculation": 94,
+        "positional": 86,
+        "endgame": 85,
+        "chaos": 100
+      }
+    },
+    {
+      "id": "legend_002_kasparov",
+      "name": "Garry Kasparov",
+      "title": "The King Conqueror",
+      "archetype": "The Dominator",
+      "signature_ability": "THE IRON ATTACK",
+      "dungeon": "The Fortress of Kings",
+      "boss_enemy": "The Steel Sovereign",
+      "tactical_weakness": "Over-extension against deep prophylactic counterpunches",
+      "signature_chess_mechanic": "Deep opening prep into explosive central breakthroughs",
+      "visual_identity": {
+        "primary_color": "#ef4444",
+        "secondary_color": "#eab308",
+        "aura": "Incandescent Flame & Molten Gold",
+        "environment": "Lava-rimmed iron castle, giant war banners"
+      },
+      "sound_identity": "Heavy brass fanfares, war drums, anvil strikes",
+      "character_stats": {
+        "tactics": 98,
+        "calculation": 99,
+        "positional": 95,
+        "endgame": 93,
+        "chaos": 90
+      }
+    },
+    {
+      "id": "legend_003_capablanca",
+      "name": "José Raúl Capablanca",
+      "title": "The Silent Master",
+      "archetype": "The Precision Strategist",
+      "signature_ability": "PERFECT SIMPLICITY",
+      "dungeon": "The Glass Palace",
+      "boss_enemy": "The Crystal Automaton",
+      "tactical_weakness": "Boredom in quiet positions, occasional tactical complacency",
+      "signature_chess_mechanic": "Effortless piece coordination and flawless technical endgame conversion",
+      "visual_identity": {
+        "primary_color": "#06b6d4",
+        "secondary_color": "#f8fafc",
+        "aura": "Crystalline Diamond Radiance",
+        "environment": "Prismatic glass sanctum, pristine reflections"
+      },
+      "sound_identity": "Pure crystal tones, acoustic strings, metronomic calm",
+      "character_stats": {
+        "tactics": 90,
+        "calculation": 95,
+        "positional": 100,
+        "endgame": 100,
+        "chaos": 40
+      }
+    },
+    {
+      "id": "legend_004_fischer",
+      "name": "Bobby Fischer",
+      "title": "The Perfectionist",
+      "archetype": "The Precision Assassin",
+      "signature_ability": "THE ONLY MOVE",
+      "dungeon": "The Clockwork Labyrinth",
+      "boss_enemy": "The Temporal Architect",
+      "tactical_weakness": "Dogmatic refusal to compromise, psychological isolation",
+      "signature_chess_mechanic": "Uncompromising accuracy, razor-sharp classical dynamism",
+      "visual_identity": {
+        "primary_color": "#3b82f6",
+        "secondary_color": "#10b981",
+        "aura": "Electric Blue Laser Glyphs",
+        "environment": "Intricate brass clockwork gears, pendulum blades"
+      },
+      "sound_identity": "Relentless mechanical ticks, ticking clocks, thunder cracks",
+      "character_stats": {
+        "tactics": 99,
+        "calculation": 99,
+        "positional": 97,
+        "endgame": 98,
+        "chaos": 70
+      }
+    },
+    {
+      "id": "legend_005_morphy",
+      "name": "Paul Morphy",
+      "title": "The Phantom of Development",
+      "archetype": "The Rapid Striker",
+      "signature_ability": "DEVELOPMENT ADVANTAGE",
+      "dungeon": "The Abandoned Cathedral",
+      "boss_enemy": "The Slumbering Titan",
+      "tactical_weakness": "Unfamiliarity with modern hypermodern defensive systems",
+      "signature_chess_mechanic": "Rapid piece mobilization and open diagonal decimation",
+      "visual_identity": {
+        "primary_color": "#10b981",
+        "secondary_color": "#facc15",
+        "aura": "Spectral Green Gale",
+        "environment": "Gothic cathedral, towering shattered stained glass"
+      },
+      "sound_identity": "Haunting pipe organs, wind gusts, swift rapier slices",
+      "character_stats": {
+        "tactics": 96,
+        "calculation": 92,
+        "positional": 90,
+        "endgame": 88,
+        "chaos": 85
+      }
+    },
+    {
+      "id": "legend_006_petrosian",
+      "name": "Tigran Petrosian",
+      "title": "The Iron Guardian",
+      "archetype": "The Defensive Master",
+      "signature_ability": "PROPHETIC DEFENCE",
+      "dungeon": "The Unbreakable Citadel",
+      "boss_enemy": "The Siege Leviathan",
+      "tactical_weakness": "Excessive caution leading to draws in winning positions",
+      "signature_chess_mechanic": "Prophylactic exchange sacrifices and complete positional strangulation",
+      "visual_identity": {
+        "primary_color": "#64748b",
+        "secondary_color": "#334155",
+        "aura": "Hardened Granite Shield & Ward Glyphs",
+        "environment": "Massive granite fortress walls, deep underground bunkers"
+      },
+      "sound_identity": "Rumbling tectonic plates, stone grinding, deep shield impacts",
+      "character_stats": {
+        "tactics": 91,
+        "calculation": 94,
+        "positional": 99,
+        "endgame": 96,
+        "chaos": 30
+      }
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "templates": [
+    {
+      "id": "TAL_AURA_SACRIFICE_001",
+      "name": "Aura Sacrifice",
+      "trigger": "queen_sacrifice OR verified_knight_sacrifice",
+      "style": "dark fantasy / aura / cinematic",
+      "duration_sec": 45,
+      "aspect_ratio": "9:16",
+      "fps": 30,
+      "resolution": {"width": 1080, "height": 1920},
+      "timeline_beats": [
+        {"start_sec": 0.0, "end_sec": 1.5, "beat": "Hook"},
+        {"start_sec": 1.5, "end_sec": 3.0, "beat": "Chessboard freeze"},
+        {"start_sec": 3.0, "end_sec": 5.0, "beat": "Character reveal"},
+        {"start_sec": 5.0, "end_sec": 7.0, "beat": "Piece highlight"},
+        {"start_sec": 7.0, "end_sec": 10.0, "beat": "Aura activation"},
+        {"start_sec": 10.0, "end_sec": 13.0, "beat": "Suspense build"},
+        {"start_sec": 13.0, "end_sec": 18.0, "beat": "Sacrifice reveal"},
+        {"start_sec": 18.0, "end_sec": 26.0, "beat": "Tactical sequence"},
+        {"start_sec": 26.0, "end_sec": 33.0, "beat": "Boss impact"},
+        {"start_sec": 33.0, "end_sec": 39.0, "beat": "Victory"},
+        {"start_sec": 39.0, "end_sec": 45.0, "beat": "Product teaser"}
+      ]
+    },
+    {
+      "id": "BLUNDER_HUMILIATION_002",
+      "name": "Blunder Humiliation",
+      "trigger": "blunder AND severe_eval_drop",
+      "style": "dramatic zoom / glitch / comic irony",
+      "duration_sec": 30,
+      "timeline_beats": [
+        {"start_sec": 0.0, "end_sec": 2.0, "beat": "Overconfident Boss Hook"},
+        {"start_sec": 2.0, "end_sec": 6.0, "beat": "The Fatal Mistake"},
+        {"start_sec": 6.0, "end_sec": 10.0, "beat": "Freeze Frame Realization"},
+        {"start_sec": 10.0, "end_sec": 18.0, "beat": "Brutal Counterattack"},
+        {"start_sec": 18.0, "end_sec": 25.0, "beat": "Boss Demolition"},
+        {"start_sec": 25.0, "end_sec": 30.0, "beat": "Teaser & Playable Challenge"}
+      ]
+    },
+    {
+      "id": "FORCED_CHECKMATE_003",
+      "name": "Forced Checkmate",
+      "trigger": "forced_checkmate",
+      "style": "apocalyptic / red aura / execution",
+      "duration_sec": 30,
+      "timeline_beats": [
+        {"start_sec": 0.0, "end_sec": 2.0, "beat": "Escape Is Futile Hook"},
+        {"start_sec": 2.0, "end_sec": 7.0, "beat": "The Inescapable Net"},
+        {"start_sec": 7.0, "end_sec": 15.0, "beat": "The Relentless Checks"},
+        {"start_sec": 15.0, "end_sec": 22.0, "beat": "The Final King Cornering"},
+        {"start_sec": 22.0, "end_sec": 27.0, "beat": "Checkmate Strike"},
+        {"start_sec": 27.0, "end_sec": 30.0, "beat": "Teaser"}
+      ]
+    },
+    {
+      "id": "FINAL_BOSS_004",
+      "name": "Final Boss Encounter",
+      "trigger": "legendary_match_turning_point",
+      "style": "epic orchestral / multi-phase",
+      "duration_sec": 60,
+      "timeline_beats": [
+        {"start_sec": 0.0, "end_sec": 5.0, "beat": "Dungeon Entrance"},
+        {"start_sec": 5.0, "end_sec": 12.0, "beat": "Boss Titan Awakening"},
+        {"start_sec": 12.0, "end_sec": 22.0, "beat": "Phase 1 Defense"},
+        {"start_sec": 22.0, "end_sec": 35.0, "beat": "Phase 2 The Crisis Move"},
+        {"start_sec": 35.0, "end_sec": 48.0, "beat": "The Climax Strike"},
+        {"start_sec": 48.0, "end_sec": 55.0, "beat": "Dungeon Collapse"},
+        {"start_sec": 55.0, "end_sec": 60.0, "beat": "Game Teaser"}
+      ]
+    },
+    {
+      "id": "LEGENDARY_ENTRANCE_005",
+      "name": "Legendary Entrance",
+      "trigger": "legend_showcase",
+      "style": "character highlight / esports intro",
+      "duration_sec": 15,
+      "timeline_beats": [
+        {"start_sec": 0.0, "end_sec": 2.0, "beat": "Silhouette Hook"},
+        {"start_sec": 2.0, "end_sec": 5.0, "beat": "Name & Title Splash"},
+        {"start_sec": 5.0, "end_sec": 10.0, "beat": "Signature Move Highlight"},
+        {"start_sec": 10.0, "end_sec": 15.0, "beat": "Call To Action"}
+      ]
+    },
+    {
+      "id": "CHESS_RESURRECTION_006",
+      "name": "Chess Resurrection",
+      "trigger": "comeback",
+      "style": "dark to light / triumph",
+      "duration_sec": 30,
+      "timeline_beats": [
+        {"start_sec": 0.0, "end_sec": 3.0, "beat": "All Hope Lost"},
+        {"start_sec": 3.0, "end_sec": 8.0, "beat": "The Desperate State"},
+        {"start_sec": 8.0, "end_sec": 14.0, "beat": "The Hidden Spark"},
+        {"start_sec": 14.0, "end_sec": 22.0, "beat": "The Reversal Surge"},
+        {"start_sec": 22.0, "end_sec": 30.0, "beat": "Triumph & Teaser"}
+      ]
+    },
+    {
+      "id": "TACTICAL_AWAKENING_007",
+      "name": "Tactical Awakening",
+      "trigger": "discovered_attack OR fork",
+      "style": "speed ramp / neon grid",
+      "duration_sec": 30,
+      "timeline_beats": [
+        {"start_sec": 0.0, "end_sec": 3.0, "beat": "Blind Spot Hook"},
+        {"start_sec": 3.0, "end_sec": 9.0, "beat": "The Trap Setup"},
+        {"start_sec": 9.0, "end_sec": 16.0, "beat": "The Awakening Unmask"},
+        {"start_sec": 16.0, "end_sec": 24.0, "beat": "Double Target Strike"},
+        {"start_sec": 24.0, "end_sec": 30.0, "beat": "Teaser"}
+      ]
+    },
+    {
+      "id": "TIME_SCRAMBLE_008",
+      "name": "Time Scramble",
+      "trigger": "time_scramble",
+      "style": "hyperspeed / kinetic / heartbeat",
+      "duration_sec": 30,
+      "timeline_beats": [
+        {"start_sec": 0.0, "end_sec": 2.0, "beat": "5 Seconds Left"},
+        {"start_sec": 2.0, "end_sec": 12.0, "beat": "Rapid Blitz Plies"},
+        {"start_sec": 12.0, "end_sec": 20.0, "beat": "The Premove Climax"},
+        {"start_sec": 20.0, "end_sec": 26.0, "beat": "0.1s Flag Stinger"},
+        {"start_sec": 26.0, "end_sec": 30.0, "beat": "Teaser"}
+      ]
+    },
+    {
+      "id": "COMEBACK_009",
+      "name": "The Impossible Comeback",
+      "trigger": "comeback",
+      "style": "high drama / Phonk shift",
+      "duration_sec": 45,
+      "timeline_beats": [
+        {"start_sec": 0.0, "end_sec": 4.0, "beat": "Near-Defeat Hook"},
+        {"start_sec": 4.0, "end_sec": 12.0, "beat": "Enemy Dominance"},
+        {"start_sec": 12.0, "end_sec": 20.0, "beat": "The Microscopic Resource"},
+        {"start_sec": 20.0, "end_sec": 32.0, "beat": "The Table Turn"},
+        {"start_sec": 32.0, "end_sec": 40.0, "beat": "Total Overthrow"},
+        {"start_sec": 40.0, "end_sec": 45.0, "beat": "Teaser"}
+      ]
+    },
+    {
+      "id": "DUNGEON_UNLOCK_010",
+      "name": "Dungeon Unlock / Choose Your Move",
+      "trigger": "interactive_challenge",
+      "style": "gameplay hud / interactive pause",
+      "duration_sec": 30,
+      "timeline_beats": [
+        {"start_sec": 0.0, "end_sec": 3.0, "beat": "Dungeon Gate Challenge"},
+        {"start_sec": 3.0, "end_sec": 10.0, "beat": "The Lethal Board Position"},
+        {"start_sec": 10.0, "end_sec": 20.0, "beat": "Countdown: Pick Move A, B, or C"},
+        {"start_sec": 20.0, "end_sec": 26.0, "beat": "Warning: Only 1 Move Survives"},
+        {"start_sec": 26.0, "end_sec": 30.0, "beat": "Comment Below for Episode 2"}
+      ]
+    }
+  ]
+}
